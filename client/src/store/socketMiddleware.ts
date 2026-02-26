@@ -89,7 +89,16 @@ export const socketMiddleware: Middleware<object, MiddlewareRootState> = (store)
   function ensureSocket() {
     if (socket) return socket;
 
-    socket = io(SERVER_URL, { autoConnect: false });
+    socket = io(SERVER_URL, {
+      autoConnect: false,
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+      transports: ['websocket', 'polling'],
+      upgrade: true,
+      rememberUpgrade: true,
+    });
 
     // --- core connection events ---
     socket.on('connect', () => {
@@ -101,7 +110,8 @@ export const socketMiddleware: Middleware<object, MiddlewareRootState> = (store)
       store.dispatch(setConnected(false));
     });
 
-    socket.on('connect_error', () => {
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
       toast.error('Cannot connect to server. Make sure the server is running.');
     });
 

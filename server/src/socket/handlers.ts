@@ -21,7 +21,19 @@ function broadcastEndQuestion(io: IoType) {
 /* ── Socket handler registration ── */
 
 export function registerSocketHandlers(io: IoType, socket: SocketType) {
-  console.log(`Socket connected: ${socket.id}`);
+  console.log(`✅ Socket connected: ${socket.id}`);
+  console.log(`📊 Connected clients: ${io.engine.clientsCount}`);
+
+  // Log disconnection
+  socket.on('disconnect', (reason) => {
+    console.log(`❌ Socket disconnected: ${socket.id} (reason: ${reason})`);
+    console.log(`📊 Connected clients: ${io.engine.clientsCount}`);
+  });
+
+  // Log connection errors
+  socket.on('error', (error) => {
+    console.error(`⚠️  Socket error for ${socket.id}:`, error);
+  });
 
   // ─── JOIN AS TEACHER ─────────────────────────────────────────────────
   socket.on('join-as-teacher', () => {

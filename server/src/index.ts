@@ -29,7 +29,17 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
   cors: {
     origin: CLIENT_URL,
     methods: ['GET', 'POST'],
+    credentials: true,
+    allowedHeaders: ['Content-Type'],
   },
+  transports: ['websocket', 'polling'],
+  pingInterval: 25000,
+  pingTimeout: 20000,
+});
+
+// Health check endpoint for deployment verification
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
 // Register socket handlers
